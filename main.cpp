@@ -61,6 +61,45 @@ public:
     virtual void performAction(int choice, Player& opponent) = 0;
 };
 
+// Класс Hunter (Охотник) с уникальной способностью "Охота"
+class Hunter : public Player {
+public:
+    Hunter(const std::string& playerName, int initialHealth = 100)
+        : Player(playerName, initialHealth) {}
+
+    void attack(Player& opponent) override {
+        // Обычная атака Охотника
+        int damage = rand() % 11 + 10;
+        std::cout << name << " стреляет и наносит " << damage << " урона " << opponent.getName() << "!\n";
+        opponent.takeDamage(damage);
+    }
+
+    // Способность "Охота" - дополнительный урон
+    void hunt(Player& opponent) {
+        int damage = rand() % 21 + 20; // Урон от 20 до 40
+        std::cout << name << " использует способность ОХОТА и наносит " << damage << " урона " << opponent.getName() << "!\n";
+        opponent.takeDamage(damage);
+    }
+
+    void displayActions() const override {
+        std::cout << "Действия:\n";
+        std::cout << "1. Атаковать\n";
+        std::cout << "2. Использовать Охоту (наносит дополнительный урон)\n";
+    }
+
+    void performAction(int choice, Player& opponent) override {
+        if (choice == 1) {
+            attack(opponent);
+        }
+        else if (choice == 2) {
+            hunt(opponent);
+        }
+        else {
+            std::cout << "Некорректный выбор действия. Пропуск хода.\n";
+        }
+    }
+};
+
 int main() {
     std::cout << "Hello, World!\n";
     return 0;
