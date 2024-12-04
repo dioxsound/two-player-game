@@ -198,6 +198,81 @@ public:
             applyBurn(opponent);
         }
     }
+}
+
+// Класс Game управляет процессом игры
+class Game {
+private:
+    std::unique_ptr<Player> player1; // Первый игрок
+    std::unique_ptr<Player> player2; // Второй игрок
+
+public:
+    // Конструктор принимает имена и типы персонажей игроков
+    Game(std::unique_ptr<Player> p1, std::unique_ptr<Player> p2)
+        : player1(std::move(p1)), player2(std::move(p2)) {}
+
+    // Метод для запуска игры
+    void start() {
+        std::cout << "=== Добро пожаловать в консольную файтинг-игру! ===\n";
+        std::cout << player1->getName() << " против " << player2->getName() << "!\n\n";
+
+        // Определяем, кто будет начинать первым случайно
+        Player* currentPlayer = nullptr;
+        Player* otherPlayer = nullptr;
+
+        if (rand() % 2 == 0) {
+            currentPlayer = player1.get();
+            otherPlayer = player2.get();
+        }
+        else {
+            currentPlayer = player2.get();
+            otherPlayer = player1.get();
+        }
+
+        std::cout << currentPlayer->getName() << " начинает первым!\n\n";
+
+        // Основной цикл игры
+        while (player1->isAlive() && player2->isAlive()) {
+            std::cout << "Ход игрока: " << currentPlayer->getName() << "\n";
+            currentPlayer->displayActions();
+            std::cout << "Выберите действие (1 или 2): ";
+
+            int choice;
+            std::cin >> choice;
+            std::cin.ignore(); // Очистка буфера ввода
+
+            currentPlayer->performAction(choice, *otherPlayer);
+
+            // Проверка и применение огненного урона для Pyromancer
+            // Если currentPlayer или otherPlayer является Pyromancer
+            Pyromancer* pyroCurrent = dynamic_cast<Pyromancer*>(currentPlayer);
+            Pyromancer* pyroOther = dynamic_cast<Pyromancer*>(otherPlayer);
+
+            if (pyroCurrent) {
+                pyroCurrent->checkBurn(*otherPlayer);
+            }
+            if (pyroOther) {
+                pyroOther->checkBurn(*currentPlayer);
+            }
+
+            // Вывод текущего здоровья обоих игроков
+            std::cout << "\nТекущее здоровье:\n";
+            std::cout << player1->getName() << ": " << player1->getHealth() << " HP\n";
+            std::cout << player2->getName() << ": " << player2->getHealth() << " HP\n\n";
+
+            // Проверка, жив ли противник
+            if (!otherPlayer->isAlive()) {
+                std::cout << otherPlayer->getName() << " побежден!\n";
+                std::cout << currentPlayer->getName() << " выигрывает игру!\n";
+                break;
+            }
+
+            // Меняем текущего игрока
+            std::swap(currentPlayer, otherPlayer);
+        }
+
+        std::cout << "=== Игра окончена! ===\n";
+    }
 };
 
 int main() {
