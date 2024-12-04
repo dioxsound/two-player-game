@@ -61,7 +61,7 @@ public:
     virtual void performAction(int choice, Player& opponent) = 0;
 };
 
-// Класс Hunter (Охотник) с уникальной способностью "Охота"
+// Класс Hunter (Охотник с охоткой) с уникальной способностью "Выпить Охоту"
 class Hunter : public Player {
 public:
     Hunter(const std::string& playerName, int initialHealth = 100)
@@ -74,17 +74,17 @@ public:
         opponent.takeDamage(damage);
     }
 
-    // Способность "Охота" - дополнительный урон
+    // Способность "Выпить Охоту" - сходит с ума и наносит дополнительный урон
     void hunt(Player& opponent) {
         int damage = rand() % 21 + 20; // Урон от 20 до 40
-        std::cout << name << " использует способность ОХОТА и наносит " << damage << " урона " << opponent.getName() << "!\n";
+        std::cout << name << " выпивает " << "Охоту и внезапно теряет рассудок, нанося " << damage << " урона " << opponent.getName() << "!\n";
         opponent.takeDamage(damage);
     }
 
     void displayActions() const override {
         std::cout << "Действия:\n";
         std::cout << "1. Атаковать\n";
-        std::cout << "2. Использовать Охоту (наносит дополнительный урон)\n";
+        std::cout << "2. Выпить Охоту (наносит дополнительный урон)\n";
     }
 
     void performAction(int choice, Player& opponent) override {
@@ -100,7 +100,7 @@ public:
     }
 };
 
-// Класс Healer (Целитель-пацифист) с уникальной способностью "Исцеление"
+// Класс Healer (Целитель-пацифист) с уникальной способностью "ИСЦЕЛЕНИЕ"
 class Healer : public Player {
 public:
     Healer(const std::string& playerName, int initialHealth = 100)
@@ -109,21 +109,23 @@ public:
     void attack(Player& opponent) override {
         // Атака Целителя
         int damage = rand() % 6 + 5; // Слабый урон от 5 до 10
-        std::cout << name << " наносит слабый удар и наносит " << damage << " урона " << opponent.getName() << "!\n";
+        std::cout << name << " наносит слабенький удар и наносит " << damage << " урона " << opponent.getName() << "!\n";
         opponent.takeDamage(damage);
     }
 
-    // Способность "Исцеление" - восстанавливает здоровье самого себя
-    void heal() {
+    // Способность "ИСЦЕЛЕНИЕ" - восстанавливает здоровье противника
+    void heal(Player& opponent) {
         int healAmount = rand() % 21 + 10; // Восстановление от 10 до 30
-        std::cout << name << " использует способность ИСЦЕЛЕНИЕ и восстанавливает " << healAmount << " здоровья!\n";
-        receiveHealing(healAmount);
+        std::cout << name << " из-за тремора попадает вместо себя " 
+                  << "ИСЦЕЛЕНИЕМ на " << opponent.getName() 
+                  << ", восстанавливая " << healAmount << " здоровья!\n";
+        opponent.receiveHealing(healAmount);
     }
 
     void displayActions() const override {
         std::cout << "Действия:\n";
         std::cout << "1. Атаковать\n";
-        std::cout << "2. Использовать Исцеление (восстанавливает собственное здоровье)\n";
+        std::cout << "2. Использовать ИСЦЕЛЕНИЕ (восстанавливает здоровье)\n";
     }
 
     void performAction(int choice, Player& opponent) override {
@@ -131,17 +133,15 @@ public:
             attack(opponent);
         }
         else if (choice == 2) {
-            heal();
+            heal(opponent);
         }
         else {
             std::cout << "Некорректный выбор действия. Пропуск хода.\n";
         }
     }
-
-    // Метод для получения исцеления уже реализован в базовом классе
 };
 
-// Класс Pyromancer (Пиромант) с уникальной способностью "Огненная волна"
+// Класс Pyromancer (Пиромант) с уникальной способностью "АДСКИЙ ОГОНЬ"
 class Pyromancer : public Player {
 private:
     int burnDamage;      // Урон от огня
@@ -154,21 +154,23 @@ public:
     void attack(Player& opponent) override {
         // Обычная атака Пироманта
         int damage = rand() % 11 + 10;
-        std::cout << name << " выпускает огненную стрелу и наносит " << damage << " урона " << opponent.getName() << "!\n";
+        std::cout << name << " выпускает фаербол и наносит " << damage << " урона " << opponent.getName() << "!\n";
         opponent.takeDamage(damage);
     }
 
-    // Способность "Огненная волна" - наносит урон в течение нескольких ходов
+    // Способность "АДСКИЙ ОГОНЬ" - наносит неожиданный урон с шуткой
     void fireWave(Player& opponent) {
         burnDamage = rand() % 6 + 5; // Урон от 5 до 10 за ход
         burnDuration = 3;            // Длится 3 хода
-        std::cout << name << " использует способность ОГНЕННАЯ ВОЛНА! " << opponent.getName()
-                  << " будет получать " << burnDamage << " урона в течение " << burnDuration << " ходов.\n";
+        std::cout << name << " запускает АДСКИЙ ОГОНЬ, который неожиданно взрывается под " 
+                  << opponent.getName() << ", нанося " << burnDamage 
+                  << " урона в течение " << burnDuration << " ходов!\n";
     }
 
     void applyBurn(Player& opponent) {
         if (burnDuration > 0) {
-            std::cout << opponent.getName() << " получает " << burnDamage << " урона от ОГНЕННОЙ ВОЛНЫ.\n";
+            std::cout << opponent.getName() << " получает " << burnDamage 
+                      << " урона от СЮРПРИЗНОГО ФАЕРБОЛА! Надеюсь, он не смеется слишком сильно.\n";
             opponent.takeDamage(burnDamage);
             burnDuration--;
         }
@@ -177,7 +179,7 @@ public:
     void displayActions() const override {
         std::cout << "Действия:\n";
         std::cout << "1. Атаковать\n";
-        std::cout << "2. Использовать Огненную волну (наносит урон в течение нескольких ходов)\n";
+        std::cout << "2. Использовать АДСКИЙ ОГОНЬ (наносит урон в течение нескольких ходов)\n";
     }
 
     void performAction(int choice, Player& opponent) override {
@@ -278,7 +280,7 @@ public:
 // Функция для выбора персонажа
 std::unique_ptr<Player> chooseCharacter(const std::string& playerNumber) {
     std::cout << "Выберите персонажа для " << playerNumber << " игрока:\n";
-    std::cout << "1. Охотник\n";
+    std::cout << "1. Охотник с охоткой\n";
     std::cout << "2. Целитель-пацифист\n";
     std::cout << "3. Пиромант\n";
     std::cout << "Введите номер выбора: ";
@@ -299,7 +301,7 @@ std::unique_ptr<Player> chooseCharacter(const std::string& playerNumber) {
     case 3:
         return std::make_unique<Pyromancer>(name);
     default:
-        std::cout << "Некорректный выбор. По умолчанию выбран Охотник.\n";
+        std::cout << "Некорректный выбор. По умолчанию выбран Охотник с охоткой.\n";
         return std::make_unique<Hunter>(name);
     }
 }
@@ -308,7 +310,7 @@ int main() {
     // Инициализация генератора случайных чисел
     srand(static_cast<unsigned int>(time(0)));
 
-    std::cout << "=== Настройка игры ===\n";
+    std::cout << "=== Настойка игры ===\n";
 
     // Выбор персонажей для обоих игроков
     auto player1 = chooseCharacter("первого");
