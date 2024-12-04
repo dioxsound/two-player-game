@@ -198,7 +198,7 @@ public:
             applyBurn(opponent);
         }
     }
-}
+};
 
 // Класс Game управляет процессом игры
 class Game {
@@ -274,8 +274,3 @@ public:
         std::cout << "=== Игра окончена! ===\n";
     }
 };
-
-int main() {
-    std::cout << "Hello, World!\n";
-    return 0;
-}
