@@ -100,6 +100,47 @@ public:
     }
 };
 
+// Класс Healer (Целитель-пацифист) с уникальной способностью "Исцеление"
+class Healer : public Player {
+public:
+    Healer(const std::string& playerName, int initialHealth = 100)
+        : Player(playerName, initialHealth) {}
+
+    void attack(Player& opponent) override {
+        // Атака Целителя
+        int damage = rand() % 6 + 5; // Слабый урон от 5 до 10
+        std::cout << name << " наносит слабый удар и наносит " << damage << " урона " << opponent.getName() << "!\n";
+        opponent.takeDamage(damage);
+    }
+
+    // Способность "Исцеление" - восстанавливает здоровье самого себя
+    void heal() {
+        int healAmount = rand() % 21 + 10; // Восстановление от 10 до 30
+        std::cout << name << " использует способность ИСЦЕЛЕНИЕ и восстанавливает " << healAmount << " здоровья!\n";
+        receiveHealing(healAmount);
+    }
+
+    void displayActions() const override {
+        std::cout << "Действия:\n";
+        std::cout << "1. Атаковать\n";
+        std::cout << "2. Использовать Исцеление (восстанавливает собственное здоровье)\n";
+    }
+
+    void performAction(int choice, Player& opponent) override {
+        if (choice == 1) {
+            attack(opponent);
+        }
+        else if (choice == 2) {
+            heal();
+        }
+        else {
+            std::cout << "Некорректный выбор действия. Пропуск хода.\n";
+        }
+    }
+
+    // Метод для получения исцеления уже реализован в базовом классе
+};
+
 int main() {
     std::cout << "Hello, World!\n";
     return 0;
