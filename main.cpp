@@ -141,6 +141,65 @@ public:
     // Метод для получения исцеления уже реализован в базовом классе
 };
 
+// Класс Pyromancer (Пиромант) с уникальной способностью "Огненная волна"
+class Pyromancer : public Player {
+private:
+    int burnDamage;      // Урон от огня
+    int burnDuration;    // Количество ходов, в течение которых действует огонь
+
+public:
+    Pyromancer(const std::string& playerName, int initialHealth = 100)
+        : Player(playerName, initialHealth), burnDamage(0), burnDuration(0) {}
+
+    void attack(Player& opponent) override {
+        // Обычная атака Пироманта
+        int damage = rand() % 11 + 10;
+        std::cout << name << " выпускает огненную стрелу и наносит " << damage << " урона " << opponent.getName() << "!\n";
+        opponent.takeDamage(damage);
+    }
+
+    // Способность "Огненная волна" - наносит урон в течение нескольких ходов
+    void fireWave(Player& opponent) {
+        burnDamage = rand() % 6 + 5; // Урон от 5 до 10 за ход
+        burnDuration = 3;            // Длится 3 хода
+        std::cout << name << " использует способность ОГНЕННАЯ ВОЛНА! " << opponent.getName()
+                  << " будет получать " << burnDamage << " урона в течение " << burnDuration << " ходов.\n";
+    }
+
+    void applyBurn(Player& opponent) {
+        if (burnDuration > 0) {
+            std::cout << opponent.getName() << " получает " << burnDamage << " урона от ОГНЕННОЙ ВОЛНЫ.\n";
+            opponent.takeDamage(burnDamage);
+            burnDuration--;
+        }
+    }
+
+    void displayActions() const override {
+        std::cout << "Действия:\n";
+        std::cout << "1. Атаковать\n";
+        std::cout << "2. Использовать Огненную волну (наносит урон в течение нескольких ходов)\n";
+    }
+
+    void performAction(int choice, Player& opponent) override {
+        if (choice == 1) {
+            attack(opponent);
+        }
+        else if (choice == 2) {
+            fireWave(opponent);
+        }
+        else {
+            std::cout << "Некорректный выбор действия. Пропуск хода.\n";
+        }
+    }
+
+    // Метод для проверки и применения огненного урона
+    void checkBurn(Player& opponent) {
+        if (burnDuration > 0) {
+            applyBurn(opponent);
+        }
+    }
+};
+
 int main() {
     std::cout << "Hello, World!\n";
     return 0;
