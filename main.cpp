@@ -274,3 +274,51 @@ public:
         std::cout << "=== Игра окончена! ===\n";
     }
 };
+
+// Функция для выбора персонажа
+std::unique_ptr<Player> chooseCharacter(const std::string& playerNumber) {
+    std::cout << "Выберите персонажа для " << playerNumber << " игрока:\n";
+    std::cout << "1. Охотник\n";
+    std::cout << "2. Целитель-пацифист\n";
+    std::cout << "3. Пиромант\n";
+    std::cout << "Введите номер выбора: ";
+
+    int choice;
+    std::cin >> choice;
+    std::cin.ignore(); // Очистка буфера ввода
+
+    std::string name;
+    std::cout << "Введите имя персонажа: ";
+    std::getline(std::cin, name);
+
+    switch (choice) {
+    case 1:
+        return std::make_unique<Hunter>(name);
+    case 2:
+        return std::make_unique<Healer>(name);
+    case 3:
+        return std::make_unique<Pyromancer>(name);
+    default:
+        std::cout << "Некорректный выбор. По умолчанию выбран Охотник.\n";
+        return std::make_unique<Hunter>(name);
+    }
+}
+
+int main() {
+    // Инициализация генератора случайных чисел
+    srand(static_cast<unsigned int>(time(0)));
+
+    std::cout << "=== Настройка игры ===\n";
+
+    // Выбор персонажей для обоих игроков
+    auto player1 = chooseCharacter("первого");
+    auto player2 = chooseCharacter("второго");
+
+    std::cout << "\n";
+
+    // Создание объекта игры и запуск
+    Game game(std::move(player1), std::move(player2));
+    game.start();
+
+    return 0;
+}
